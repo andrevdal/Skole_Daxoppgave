@@ -1,0 +1,62 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        
+    </head>
+    <body>
+        <form id="namesform">
+            <input type="text" name="name" placeholder="your name" id="inputedName">
+            <button type="submit">submit</button>
+        </form>
+        <h1>List of names:</h1>
+        <p id="listOfNames"></p>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
+            import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-firestore.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+              apiKey: "AIzaSyDLewVIO7Sw3m9KPkK01Xo2pZoBHd6Z40Q",
+              authDomain: "daxoppgave.firebaseapp.com",
+              projectId: "daxoppgave",
+              storageBucket: "daxoppgave.appspot.com",
+              messagingSenderId: "794586723076",
+              appId: "1:794586723076:web:5dad1227e19cc5aff55651",
+              measurementId: "G-GQT9CPHTSX"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+
+            const namesFormEl = document.getElementById("namesform");
+            const listOfNamesEl = document.getElementById("listOfNames");
+            getNames(db).then(names => {
+                    listOfNamesEl.textContent = names.join(" and ")
+            })
+            namesFormEl.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const namesCollection = collection(db, 'names');
+                addDoc(namesCollection, {name: inputedName.value}).then(() => {
+                    getNames(db).then(names => {
+                    listOfNamesEl.textContent = names.join(" and ")
+            })
+                })
+
+            })
+            async function getNames(db) {
+                const namesCollection = collection(db, 'names');
+                const nameSnapshot = await getDocs(namesCollection);
+                const namesList = nameSnapshot.docs.map(doc => doc.data().name);
+                return namesList;
+            }
+        </script>
+    </body>
+</html>
