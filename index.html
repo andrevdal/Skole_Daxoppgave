@@ -4,14 +4,17 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
-        
+        <link rel="stylesheet" href="styles.css">
     </head>
     <body>
         <form id="namesform">
             <input type="text" name="name" placeholder="your name" id="inputedName">
             <button type="submit">submit</button>
         </form>
-        <h1>List of names:</h1>
+        <h3 id="welcome"></h3>
+        <h3>Your luckyNumber of the minute is:</h3>
+        <h1 id="luckyNumber">...</h1>
+        <h1>A big thank you for visiting and leaving your name...</h1>
         <p id="listOfNames"></p>
         <script type="module">
             // Import the functions you need from the SDKs you need
@@ -36,27 +39,41 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
 
+            
+            const luckyNumberEl = document.getElementById("luckyNumber")
+            const welcomeEl = document.getElementById("welcome")
             const namesFormEl = document.getElementById("namesform");
             const listOfNamesEl = document.getElementById("listOfNames");
+            const myWorker = new Worker('worker.js');
             getNames(db).then(names => {
-                    listOfNamesEl.textContent = names.join(" and ")
+                listOfNamesEl.textContent = names.join(" and ")
             })
             namesFormEl.addEventListener("submit", (e) => {
                 e.preventDefault();
+                welcomeEl.textContent = "welcome and thank you for visiting " + inputedName.value
                 const namesCollection = collection(db, 'names');
                 addDoc(namesCollection, {name: inputedName.value}).then(() => {
                     getNames(db).then(names => {
-                    listOfNamesEl.textContent = names.join(" and ")
-            })
+                        listOfNamesEl.textContent = names.join(" and ")
+                    })
                 })
-
+                
             })
+
+            myWorker.onmessage = (e) => {
+                luckyNumberEl.textContent = e.data
+            }
+
             async function getNames(db) {
                 const namesCollection = collection(db, 'names');
                 const nameSnapshot = await getDocs(namesCollection);
                 const namesList = nameSnapshot.docs.map(doc => doc.data().name);
                 return namesList;
             }
+            function randomize() {
+                let ranomNumber = Math.floor(Math.random() * 1000)
+            }
+             
         </script>
     </body>
 </html>
