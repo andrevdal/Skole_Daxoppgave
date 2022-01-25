@@ -3,7 +3,7 @@ function randomize() {
 }
 while(true){
     let seconds = new Date().getSeconds()
-    if(seconds === 20){
+    if(seconds === 59){
         postMessage(randomize());
         break
     }
