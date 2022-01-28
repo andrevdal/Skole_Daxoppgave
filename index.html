@@ -14,8 +14,13 @@
         <h3 id="welcome"></h3>
         <h3>Your luckyNumber of the minute is:</h3>
         <h1 id="luckyNumber">...</h1>
+        <form id="guessForm">
+            <input type="number" name="name" placeholder="Guess your lucky number" id="guessInput" min="1" max="1000">
+            <button type="submit">submit</button>
+        </form>
         <h1>A big thank you for visiting and leaving your name...</h1>
         <p id="listOfNames"></p>
+        
         <script type="module">
             // Import the functions you need from the SDKs you need
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
@@ -39,12 +44,18 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
 
-            
+            let guessedNumber
+            const guessInputEl = document.getElementById("guessInput")
+            const guessFormEl = document.getElementById("guessForm")
+            const fart = new Audio("src/fart.mp3")
+            const vineBoom = new Audio("src/vine-boom.mp3")
             const luckyNumberEl = document.getElementById("luckyNumber")
             const welcomeEl = document.getElementById("welcome")
             const namesFormEl = document.getElementById("namesform");
             const listOfNamesEl = document.getElementById("listOfNames");
             const myWorker = new Worker('worker.js');
+
+
             getNames(db).then(names => {
                 listOfNamesEl.textContent = names.join(" and ")
             })
@@ -60,8 +71,22 @@
                 
             })
 
+            guessFormEl.addEventListener("submit", (e) => {
+                e.preventDefault();
+                guessedNumber = guessInputEl.value;
+                guessInputEl.value = null
+            })
+
             myWorker.onmessage = (e) => {
                 luckyNumberEl.textContent = e.data
+                vineBoom.play();
+                if(guessedNumber == e.data){
+                    let randomColor = '#' + Math.floor(Math.random() * 10000)
+                    document.body.style.backgroundColor = randomColor;
+                    setTimeout(()=>{
+                       fart.play(); 
+                    },1000)
+                }
             }
 
             async function getNames(db) {
@@ -70,10 +95,6 @@
                 const namesList = nameSnapshot.docs.map(doc => doc.data().name);
                 return namesList;
             }
-            function randomize() {
-                let ranomNumber = Math.floor(Math.random() * 1000)
-            }
-             
         </script>
     </body>
 </html>

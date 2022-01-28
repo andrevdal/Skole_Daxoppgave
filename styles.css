@@ -8,3 +8,6 @@ body{
 #luckyNumber{
     font-size: 15vh;
 } 
+#guessInput{
+    width: 185px;
+}
