@@ -1,0 +1,1 @@
+Dette er en nettside du må starte ved å åpne globalprotect via ikt-fag portalen. Deretter skriver du 10.12.2.2 i nettleseren din.
