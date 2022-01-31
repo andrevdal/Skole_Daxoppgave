@@ -76,6 +76,8 @@
       const listOfNamesEl = document.getElementById("listOfNames");
       const myWorker = new Worker("worker.js");
 
+      if (!localStorage.names) localStorage.names = "[]"
+
       getNames(db).then((names) => {
         listOfNamesEl.textContent = names.join(" and ");
       });
@@ -85,7 +87,8 @@
           "welcome and thank you for visiting " + inputedName.value;
         const namesCollection = collection(db, "names");
         addDoc(namesCollection, { name: inputedName.value }).then(() => {
-          getNames(db).then((names) => {
+            getNames(db).then((names) => {
+              localStorage.names = JSON.stringify(names)
             listOfNamesEl.textContent = names.join(" and ");
           });
         });
